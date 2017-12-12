@@ -1,17 +1,19 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <limits.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <regex.h>
 
-#define MIN_VALID_IP_VALUE 0x01000000
+#define MIN_VALID_IP_VALUE 0x00000000
 #define MAX_VALID_IP_VALUE 0xffffffff
 
 int main(int argc, char **argv)
 {
     struct in_addr result;
     int ret = 0;
+    unsigned long ip;
     char *endptr; 
     char input[INET_ADDRSTRLEN] = {'0'};
     char output[INET_ADDRSTRLEN] = {'0'};
@@ -32,18 +34,19 @@ int main(int argc, char **argv)
         exit(-1);
     }
 
-    ret = strtol(input, &endptr, 0);
-    if (ret <= 0) {
-        perror("failed parse params!");
+    ip = strtol(input, &endptr, 0);
+    if ((errno == ERANGE && (ip == LONG_MAX || ip == LONG_MIN)) 
+            || (ip == 0 && errno != 0)) {
+        perror ("failed parse params!");
         exit(-1);
     }
 
     if (*endptr == '\0') {
-        if ( ret < MIN_VALID_IP_VALUE || (ret > MAX_VALID_IP_VALUE)) {
+        if ( ip < MIN_VALID_IP_VALUE || (ip > MAX_VALID_IP_VALUE)) {
             fprintf(stderr, "param %s is too min or too big!\n", argv[1]);
             exit(-1);
         }
-        result.s_addr = htonl(ret);
+        result.s_addr = htonl(ip);
         inet_ntop(PF_INET, &result, output, sizeof(output));
         printf("%s\n", output);
     } else {
