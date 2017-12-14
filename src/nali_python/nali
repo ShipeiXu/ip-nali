@@ -31,7 +31,7 @@ def process_line(line):
 
 
 if __name__ == "__main__":
-    IP.load(os.path.abspath("mydata4vipweek2.dat"))
+    IP.load(os.path.abspath("/usr/local/bin/nali/mydata4vipweek2.dat"))
     line = sys.stdin.readline()
 
     while line:
