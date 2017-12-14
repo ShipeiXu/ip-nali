@@ -55,7 +55,7 @@ int main(int argc, char **argv)
             fprintf(stderr, "param %s is invalid!\n", argv[1]);
             exit(-1);
         }
-        printf("0x%x, %d\n", ntohl(result.s_addr), ntohl(result.s_addr));
+        printf("0x%x, %u\n", ntohl(result.s_addr), ntohl(result.s_addr));
     }
 
     return 0;
