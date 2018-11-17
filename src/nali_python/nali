@@ -1,37 +1,36 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 
 import os
 import sys
 import re
+import ipdb
 
-reload(sys)
-sys.setdefaultencoding("utf-8")
-
-from ipip import IP
+db = ipdb.City("./mydata4vipweek2.ipdb")
+pattern_ipv4 = r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
+rr = re.compile(pattern_ipv4, re.I)
 
 def ip_check(ip):
     q = ip.split('.')
     return len(q) == 4 and len(
-        filter(lambda x: x >= 0 and x <= 255,
-               map(int, filter(lambda x: x.isdigit(), q)))) == 4
+            filter(lambda x: x >= 0 and x <= 255, map(int, filter(lambda x: x.isdigit(), q)))) == 4
 
 
 def process_line(line):
     line = line.strip('\n')
-    pattern = r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
-    fileds = re.search(pattern, line)
+    fileds = re.search(rr, line)
     if fileds:
-        tmp = IP.find(fileds.group())
-        replace = re.sub("\s", ' ', tmp, 0)
-        replace = fileds.group() + ' (' + replace + ')'
-        result = re.sub(pattern, replace, line, 0)
-        print result
+        fileds = fileds.group(0)
+        tmp = db.find(fileds, "CN")
+        tmp = str(tmp)
+        #replace = re.sub("\s", ' ', tmp, 0)
+        replace = fileds + tmp 
+        result = re.sub(rr, replace, line, 0)
+        print (result)
     else:
-        print line
+        print (line)
 
 
 if __name__ == "__main__":
-    IP.load(os.path.abspath("/usr/local/bin/nali/mydata4vipweek2.dat"))
     line = sys.stdin.readline()
 
     while line:
